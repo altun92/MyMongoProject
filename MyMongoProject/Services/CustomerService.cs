@@ -25,24 +25,27 @@ namespace MyMongoProject.Services
             await _customerCollection.InsertOneAsync(value);
         }
 
-        public Task DeleteCustomerAsync(string customerId)
+        public async Task DeleteCustomerAsync(string customerId)
         {
-            throw new NotImplementedException();
+            await _customerCollection.DeleteOneAsync(x=>x.CustomerId==customerId);
         }
 
-        public Task<List<ResultCustomerDto>> GetAllCustomerAsync()
+        public async Task<List<ResultCustomerDto>> GetAllCustomerAsync()
         {
-            throw new NotImplementedException();
+            var values = await _customerCollection.Find(x=>true).ToListAsync();
+            return _mapper.Map<List<ResultCustomerDto>>(values);
         }
 
-        public Task GetByIdCustomerAsync(string customerId)
+        public async Task<GetByIdCustomerDto> GetByIdCustomerAsync(string customerId)
         {
-            throw new NotImplementedException();
+            var values = await _customerCollection.Find(x=>x.CustomerId==customerId).FirstOrDefaultAsync();
+            return _mapper.Map<GetByIdCustomerDto>(values);
         }
 
-        public Task UpdateCustomerAsync(UpdateCustomerDto updateCustomerDto)
+        public async Task UpdateCustomerAsync(UpdateCustomerDto updateCustomerDto)
         {
-            throw new NotImplementedException();
+            var values = _mapper.Map<Customer>(updateCustomerDto);
+            await _customerCollection.FindOneAndReplaceAsync(x => x.CustomerId == updateCustomerDto.CustomerId, values);
         }
     }
 }
